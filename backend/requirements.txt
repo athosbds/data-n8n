@@ -1,0 +1,4 @@
+pandas==2.2.2
+matplotlib==3.8.1
+fpdf2==2.7.3
+dropbox

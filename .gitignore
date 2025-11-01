@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Reports gerados
+reports/*.pdf
+reports/*.png
+
+# Credenciais
+credentials/*.txt
+
+# n8n local data
+.n8n/
