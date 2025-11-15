@@ -1,15 +1,49 @@
 # Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+
+# Virtual environment
 venv/
 .env
+*.env
+
+# IDE / Editor configs
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
 
 # Reports gerados
 reports/*.pdf
 reports/*.png
 
 # Credenciais
+credentials/
 credentials/*.txt
+credentials/*.json
 
 # n8n local data
 .n8n/
+
+# Export automático do n8n (não necessário ignorar o flow)
+# Você mantém apenas o arquivo n8n-flow.json
+n8n/data/
+n8n/*.sqlite
+n8n/storage/
+
+# Arquivos temporários
+tmp/
+temp/
+*.tmp
+
+# Build / cache
+dist/
+build/
+*.egg-info/

@@ -1,0 +1,143 @@
+{
+  "name": "Automated PDF Report Generation and Email Delivery",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [3800, 200]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "recipientEmail",
+              "value": "athosbds@gmail.com",
+              "type": "string"
+            },
+            {
+              "name": "dropboxFilePath",
+              "value": "/relatorios/report.pdf",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "id": "workflow-config",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [4020, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://content.dropboxapi.com/2/files/download",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Dropbox-API-Arg",
+              "value": "={{ JSON.stringify({ path: $('Workflow Configuration').first().json.dropboxFilePath }) }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "download-pdf",
+      "name": "Download PDF from Dropbox",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [4240, 200],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "COLOQUE_AQUI_O_ID_DA_CREDENCIAL",
+          "name": "Dropbox Token (Bearer)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').first().json.recipientEmail }}",
+        "subject": "=Automated PDF Report - {{ $now.format('yyyy-MM-dd') }}",
+        "message": "=Here is your automated report generated on {{ $now.format('yyyy-MM-dd HH:mm') }}.",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "binaryPropertyName": "data"
+              }
+            ]
+          }
+        }
+      },
+      "id": "send-email",
+      "name": "Send PDF Report via Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [4480, 200],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "SEU_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Download PDF from Dropbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF from Dropbox": {
+      "main": [
+        [
+          {
+            "node": "Send PDF Report via Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false
+}
